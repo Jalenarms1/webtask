@@ -1,0 +1,6 @@
+@WebTask.ProjectService_HostAddress = http://localhost:5199
+
+GET {{WebTask.ProjectService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

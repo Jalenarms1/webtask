@@ -1,0 +1,47 @@
+
+services:
+  webtask-api-gateway:
+    image: webtask-api-gateway
+    build:
+      dockerfile: ./src/WebTask.Api/Dockerfile
+      context: .
+    container_name: webtask-api-gateway
+    ports:
+      - "5050:5050"
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5050
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - SERVICE_ID=webtask-api-gateway
+    networks:
+      - webtask-net
+  task-service:
+    image: webtask-task-service
+    container_name: task-service
+    build:
+      dockerfile: ./src/WebTask.TaskService/Dockerfile
+      context: .
+    ports:
+      - "5051:5051"
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5051
+      - JWT_SECRET=${JWT_SECRET}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - SERVICE_ID=task-service
+    networks:
+      - webtask-net
+  aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:9.0
+    environment:
+      DOTNET_DASHBOARD_UNSECURE_ALLOW_ANONYMOUS: true
+    ports:
+      - "18888:18888"
+    networks:
+      - webtask-net
+networks:
+  webtask-net:
+
+volumes:
+  aspire-data:
+  aspire-telemetry:

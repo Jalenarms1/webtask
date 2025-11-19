@@ -1,0 +1,7 @@
+{
+  "subgraph": "TaskService",
+  "http": {
+    "baseAddress": "http://task-service:5051/graphql",
+    "forwardHeaders": [ "Authorization" ]
+  }
+}

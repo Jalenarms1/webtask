@@ -34,11 +34,10 @@ public class RegisterUserHandler : IHandler<IdentityUser, CreateUserDto>
         
         if(!passwordValidationResp.Succeeded) return Result<IdentityUser>.Failure(passwordValidationResp.Errors.FirstOrDefault()?.Description ?? "invalid password");
 
-        var passwordHash = BCrypt.Net.BCrypt.HashPassword(createUserDto.password);
 
-        var newUser = new IdentityUser{Email = createUserDto.email, UserName = createUserDto.email, PasswordHash = passwordHash};
+        var newUser = new IdentityUser{Email = createUserDto.email, UserName = createUserDto.email};
 
-        var createUserResp = await _userManager.CreateAsync(newUser);
+        var createUserResp = await _userManager.CreateAsync(newUser, createUserDto.password);
 
         if(createUserResp.Errors.Any()) return Result<IdentityUser>.Failure(createUserResp.Errors.FirstOrDefault()?.Description ?? "");
         

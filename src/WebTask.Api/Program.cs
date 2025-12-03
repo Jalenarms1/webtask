@@ -68,7 +68,7 @@ builder.Services.AddAuthorization();
 //     .UseOtlpExporter();
 builder.Logging.AddWebTaskOpenTelemetryLogging(Environment.GetEnvironmentVariable("SERVICE_ID") ?? "service-not-configured");
 
-builder.Services.AddWebTaskOpenTelemetry(Environment.GetEnvironmentVariable("SERVICE_ID") ?? "service_not-configured");
+builder.Services.AddWebTaskOpenTelemetry(Environment.GetEnvironmentVariable("SERVICE_ID") ?? "service-not-configured");
 
 builder.Services.AddHttpClient("Fusion")
     .AddHttpMessageHandler(provider =>

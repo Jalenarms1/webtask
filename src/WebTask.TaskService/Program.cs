@@ -10,6 +10,9 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
 using OpenTelemetry;
+using WebTask.TaskService.Infrastructure;
+using WebTask.Shared.Types;
+using WebTask.Shared.DependencyInjection;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,66 +21,66 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-        {
-            options.RequireHttpsMetadata = false;
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ValidateLifetime = false, // for testing
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET"))), // must match token
-                RoleClaimType = ClaimTypes.Role,
-                NameClaimType = ClaimTypes.Name
-            };
-        });
+builder.Services.AddWebTaskAuthentication(new JwtSettings
+{
+    Issuer = Environment.GetEnvironmentVariable("JWT_ISSUER")!,
+    Audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE")!,
+    Secret = Environment.GetEnvironmentVariable("JWT_SECRET")!
+});
 
-builder.Services.AddAuthorization();
+// builder.Services
+//     .AddGraphQLServer()
+//     .ModifyRequestOptions(opt => opt.IncludeExceptionDetails = builder.Environment.IsDevelopment())
+//     .AddQueryType<Query>()
+//     .AddMutationType<Mutation>()
+//     .AddTypes(
+//        Assembly.GetExecutingAssembly().GetTypes()
+//         .Where(t => t.GetCustomAttribute<ExtendObjectTypeAttribute>() is not null).ToArray() 
+//     )
+//     .AddProjections()
+//     .AddFiltering()
+//     .AddSorting()
+//     .AddAuthorization();
 
-builder.Services
-    .AddGraphQLServer()
-    .AddQueryType<Query>()
-    .AddMutationType<Mutation>()
-    .AddTypes(
-       Assembly.GetExecutingAssembly().GetTypes()
-        .Where(t => t.GetCustomAttribute<ExtendObjectTypeAttribute>() != null).ToArray() 
-    )
-    .AddProjections()
-    .AddFiltering()
-    .AddSorting()
-    .AddAuthorization();
+builder.Services.AddWebTaskSubgraph<Query, Mutation>(typeof(Program).Assembly, Assembly.GetExecutingAssembly().GetTypes()
+                    .Where(t => t.GetCustomAttribute<ExtendObjectTypeAttribute>() is not null).ToArray(), modifyRequestOptions: (opt) => opt.IncludeExceptionDetails = builder.Environment.IsDevelopment());
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Logging.AddOpenTelemetry(opt =>
-{
-    opt.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Environment.GetEnvironmentVariable("SERVICE_ID")));
-    opt.IncludeScopes = true;
-    opt.IncludeFormattedMessage =true;
-});
+// builder.Logging.AddOpenTelemetry(opt =>
+// {
+//     opt.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(Environment.GetEnvironmentVariable("SERVICE_ID") ?? "no-service-configured"));
+//     opt.IncludeScopes = true;
+//     opt.IncludeFormattedMessage =true;
+// });
 
-builder.Services.AddOpenTelemetry()
-    .WithTracing(o =>
-    {
-        o.SetResourceBuilder(ResourceBuilder.CreateDefault()
-            .AddService(Environment.GetEnvironmentVariable("SERVICE_ID")));
-        o.AddAspNetCoreInstrumentation();
-        o.AddHttpClientInstrumentation();
-        // o.AddConsoleExporter();
-    })
-    .WithMetrics(o =>
-    {
-        o.SetResourceBuilder(ResourceBuilder.CreateDefault()
-            .AddService(Environment.GetEnvironmentVariable("SERVICE_ID")));
-        o.AddAspNetCoreInstrumentation();
-        o.AddHttpClientInstrumentation();
-        // o.AddConsoleExporter();
-    })
-    .UseOtlpExporter();
+// builder.Services.AddOpenTelemetry()
+//     .WithTracing(o =>
+//     {
+//         o.SetResourceBuilder(ResourceBuilder.CreateDefault()
+//             .AddService(Environment.GetEnvironmentVariable("SERVICE_ID") ?? "no-service-configured"));
+//         o.AddAspNetCoreInstrumentation();
+//         o.AddHttpClientInstrumentation();
+//         // o.AddConsoleExporter();
+//     })
+//     .WithMetrics(o =>
+//     {
+//         o.SetResourceBuilder(ResourceBuilder.CreateDefault()
+//             .AddService(Environment.GetEnvironmentVariable("SERVICE_ID") ?? "no-service-configured"));
+//         o.AddAspNetCoreInstrumentation();
+//         o.AddHttpClientInstrumentation();
+//         // o.AddConsoleExporter();
+//     })
+//     .UseOtlpExporter();
 
+builder.Logging.AddWebTaskOpenTelemetryLogging(Environment.GetEnvironmentVariable("SERVICE_ID") ?? "service-not-configured");
+
+builder.Services.AddWebTaskOpenTelemetry(Environment.GetEnvironmentVariable("SERVICE_ID") ?? "service_not-configured");
+
+builder.Services.AddTaskDb(Environment.GetEnvironmentVariable("TASK_DB_CONN")!);
+
+builder.Services.AddHandlers();
+builder.Services.AddServices();
 
 var app = builder.Build();
 

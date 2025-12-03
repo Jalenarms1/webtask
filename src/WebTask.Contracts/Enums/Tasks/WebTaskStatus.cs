@@ -1,6 +1,6 @@
 namespace WebTask.Contracts.Enums.Tasks;
 
-public enum TaskStatus
+public enum WebTaskStatus
 {
     Unclaimed,
     InProgress,

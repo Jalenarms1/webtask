@@ -13,6 +13,7 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
       - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
       - SERVICE_ID=webtask-api-gateway
+      - ASPNETCORE_ENVIRONMENT=Development
     networks:
       - webtask-net
   task-service:
@@ -25,10 +26,34 @@ services:
       - "5051:5051"
     environment:
       - ASPNETCORE_URLS=http://0.0.0.0:5051
+      - ASPNETCORE_ENVIRONMENT=Development
       - JWT_SECRET=${JWT_SECRET}
+      - JWT_ISSUER=${JWT_ISSUER}
+      - JWT_AUDIENCE=${JWT_AUDIENCE}
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
       - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
       - SERVICE_ID=task-service
+      - TASK_DB_CONN=${TASK_DB_CONN}
+    networks:
+      - webtask-net
+  auth-service:
+    image: webtask-auth-service
+    container_name: auth-service
+    build:
+      dockerfile: ./src/WebTask.AuthService/Dockerfile
+      context: .
+    ports:
+      - "5052:5052"
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5052
+      - ASPNETCORE_ENVIRONMENT=Development
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ISSUER=${JWT_ISSUER}
+      - JWT_AUDIENCE=${JWT_AUDIENCE}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - SERVICE_ID=auth-service
+      - AUTH_DB_CONN=${AUTH_DB_CONN}
     networks:
       - webtask-net
   aspire-dashboard:

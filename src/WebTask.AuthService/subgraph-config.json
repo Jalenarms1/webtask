@@ -1,0 +1,7 @@
+{
+  "subgraph": "AuthService",
+  "http": {
+    "baseAddress": "http://auth-service:5052/graphql",
+    "forwardHeaders": [ "Authorization" ]
+  }
+}

@@ -7,28 +7,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HotChocolate.AspNetCore" Version="15.1.11" />
-    <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="15.1.11" />
-    <PackageReference Include="HotChocolate.AspNetCore.CommandLine" Version="15.1.11" />
-    <PackageReference Include="HotChocolate.Data" Version="15.1.11" />
-    <PackageReference Include="HotChocolate.Types" Version="15.1.11" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.5" />
-    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.14.0" />
-    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.14.0" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.14.0" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.14.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Api/Queries/" />
-    <Folder Include="Application/" />
-    <Folder Include="Domain/" />
-    <Folder Include="Infrastructure/" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="HotChocolate.AspNetCore" />
+    <PackageReference Include="HotChocolate.AspNetCore.Authorization" />
+    <PackageReference Include="HotChocolate.AspNetCore.CommandLine" />
+    <PackageReference Include="HotChocolate.Data" />
+    <PackageReference Include="HotChocolate.Types" /> 
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\WebTask.Contracts\WebTask.Contracts.csproj" />
+    <ProjectReference Include="..\WebTask.Shared\WebTask.Shared.csproj" />
   </ItemGroup>
 
 </Project>

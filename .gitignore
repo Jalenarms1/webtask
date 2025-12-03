@@ -7,4 +7,4 @@ node_modules
 *.fgp
 *.graphql
 packaged/
-~/appsettings*.json
+*.sql

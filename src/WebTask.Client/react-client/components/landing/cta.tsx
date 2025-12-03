@@ -1,0 +1,20 @@
+import { Button } from "../ui/button"
+import { useNavigate } from "react-router-dom"
+
+export default function CTA() {
+  const navigate = useNavigate()
+
+  return (
+    <section className="py-20 px-4 sm:px-6 lg:px-8 border-t">
+      <div className="max-w-4xl mx-auto text-center">
+        <h2 className="text-3xl sm:text-4xl font-bold mb-6">Ready to Transform Your Project Management?</h2>
+        <p className="text-foreground/70 mb-8 text-lg">
+          Join hundreds of enterprises managing their most important projects with Nexus.
+        </p>
+        <Button onClick={() => navigate("/login")} size="lg" className="px-8">
+          Start Your Free Trial
+        </Button>
+      </div>
+    </section>
+  )
+}

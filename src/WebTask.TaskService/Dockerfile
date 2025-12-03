@@ -6,8 +6,11 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 
 WORKDIR /src 
 
+COPY Directory.Packages.props .
+
 COPY ./src/WebTask.TaskService/ ./WebTask.TaskService/
 COPY ./src/WebTask.Contracts/ ./WebTask.Contracts/
+COPY ./src/WebTask.Shared/ ./WebTask.Shared/
 RUN dotnet restore "./WebTask.TaskService/WebTask.TaskService.csproj" 
 
 RUN dotnet publish "./WebTask.TaskService/WebTask.TaskService.csproj" -c Release -o /app/out 
